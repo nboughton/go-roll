@@ -68,3 +68,11 @@ func (r Result) Sum() int {
 
 	return s
 }
+
+// Explode recursively rerolls d Die for any results included in match and returns a completed
+// Result set with all exploded items
+func (r Result) Explode(match []int, d Die) Result {
+	var out Result
+
+	return out
+}
