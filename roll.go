@@ -85,3 +85,25 @@ func (r Result) Keep(n int, hl Range) Result {
 
 	return out
 }
+
+// Ints returns just the number values (useful for running totals)
+func (r Result) Ints() []int {
+	var out []int
+
+	for _, n := range r {
+		out = append(out, n.N)
+	}
+
+	return out
+}
+
+// Sum returns the total numerical value of a result set
+func (r Result) Sum() int {
+	var s int
+
+	for _, n := range r {
+		s += n.N
+	}
+
+	return s
+}
