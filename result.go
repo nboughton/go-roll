@@ -6,17 +6,20 @@ import (
 )
 
 // Result represents a set of dice rolls that satsifies the sort interface
-type Result []Face
+type Result struct {
+	die   Die
+	rolls []Face
+}
 
-func (r Result) Len() int           { return len(r) }
-func (r Result) Less(i, j int) bool { return r[i].N < r[j].N }
-func (r Result) Swap(i, j int)      { r[i], r[j] = r[j], r[i] }
+func (r Result) Len() int           { return len(r.rolls) }
+func (r Result) Less(i, j int) bool { return r.rolls[i].N < r.rolls[j].N }
+func (r Result) Swap(i, j int)      { r.rolls[i], r.rolls[j] = r.rolls[j], r.rolls[i] }
 
 func (r Result) String() string {
 	var out []string
 
 	sort.Sort(r)
-	for _, f := range r {
+	for _, f := range r.rolls {
 		out = append(out, f.Value)
 	}
 
@@ -34,14 +37,14 @@ const (
 
 // Keep returns a new result struct containing the highest or lowest n results
 func (r Result) Keep(n int, hl Range) Result {
-	var out Result
+	out := Result{die: r.die}
 
 	sort.Sort(r)
 	switch hl {
 	case HIGH:
-		out = r[len(r)-n:]
+		out.rolls = r.rolls[len(r.rolls)-n:]
 	case LOW:
-		out = r[:n]
+		out.rolls = r.rolls[:n]
 	}
 
 	return out
@@ -51,7 +54,7 @@ func (r Result) Keep(n int, hl Range) Result {
 func (r Result) Ints() []int {
 	var out []int
 
-	for _, n := range r {
+	for _, n := range r.rolls {
 		out = append(out, n.N)
 	}
 
@@ -62,7 +65,7 @@ func (r Result) Ints() []int {
 func (r Result) Sum() int {
 	var s int
 
-	for _, n := range r {
+	for _, n := range r.rolls {
 		s += n.N
 	}
 
@@ -71,8 +74,27 @@ func (r Result) Sum() int {
 
 // Explode recursively rerolls d Die for any results included in match and returns a completed
 // Result set with all exploded items
-func (r Result) Explode(match []int, d Die) Result {
-	var out Result
+func (r Result) Explode(match ...int) Result {
+	var x func(s, o []Face) ([]Face, []Face)
+	x = func(s, o []Face) ([]Face, []Face) {
+		for i, res := range o {
+			for _, m := range match {
+				if res.N == m {
+					o = append(o, r.die.Roll())
 
-	return out
+					s = append(s, res)
+					o = append(o[:i], o[i+1:]...)
+
+					s, o = x(s, o)
+				}
+			}
+		}
+
+		return s, o
+	}
+
+	var store []Face
+	store, out := x(store, r.rolls)
+
+	return Result{die: r.die, rolls: append(out, store...)}
 }

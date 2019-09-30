@@ -29,7 +29,7 @@ func makeFaces(n int) []Face {
 	var f []Face
 
 	for i := 1; i <= n; i++ {
-		f = append(f, Face{i, strconv.Itoa(i), n})
+		f = append(f, Face{i, strconv.Itoa(i)})
 	}
 
 	return f

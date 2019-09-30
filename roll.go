@@ -11,10 +11,10 @@ func init() {
 
 // Dice rolls n Die and returns a result set
 func Dice(n int, d Die) Result {
-	var r Result
+	r := Result{die: d}
 
 	for i := 0; i < n; i++ {
-		r = append(r, d.Roll())
+		r.rolls = append(r.rolls, d.Roll())
 	}
 
 	return r
@@ -35,7 +35,6 @@ type Die struct {
 type Face struct {
 	N     int
 	Value string
-	Max   int
 }
 
 // Roll returns a random face of d Die
