@@ -9,8 +9,8 @@ func init() {
 	rand.Seed((time.Now().UnixNano()))
 }
 
-// Roll is the core function of this package
-func Roll(n int, d Die) Result {
+// Dice rolls n Die and returns a result set
+func Dice(n int, d Die) Result {
 	var r Result
 
 	for i := 0; i < n; i++ {
@@ -35,6 +35,7 @@ type Die struct {
 type Face struct {
 	N     int
 	Value string
+	Max   int
 }
 
 // Roll returns a random face of d Die
