@@ -3,6 +3,7 @@ package roll
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -14,64 +15,64 @@ var (
 )
 
 // FromString reads a dice string like 3d6X6Kh2: roll 3 6 sided dice, exploding 6s, and keep the lowest 2, and return a Result struct
-func FromString(s string) string {
+func FromString(s string) (Result, error) {
+	var roll Result
+
 	// Get indices
-	for _, t := range matcher.FindAllString(s, -1) {
+	for i, op := range matcher.FindAllString(s, -1) {
+		if i == 0 && !dice.MatchString(op) {
+			return roll, fmt.Errorf("First argument must be a dice string (3d6 etc)")
+		}
+
 		switch {
-		case dice.MatchString(t):
+		case dice.MatchString(op):
+			roll = Dice(dieFromString(op))
 
+		case keep.MatchString(op):
+			roll = roll.Keep(keepFromString(op))
+
+		case exp.MatchString(op):
+			roll = roll.Explode(expFromString(op)...)
+
+		default:
+			return roll, fmt.Errorf("Invalid operation: %s", op)
 		}
-		fmt.Println(t)
+
 	}
 
-	return ""
-	/*
-		nD, d, dErr := dieFromString(s)
-		if dErr != nil {
-			return Result{}, dErr
-		}
-
-		nK, r, kErr := keepFromString(s)
-
-		roll := Dice(nD, d)
-		fmt.Println(roll)
-		if kErr == nil {
-			roll = roll.Keep(nK, r)
-		}
-
-		return roll, nil
-	*/
+	return roll, nil
 }
 
-func dieFromString(s string) (int, Die, error) {
-	m := dice.FindString(s)
-	if m == "" {
-		return 0, Die{}, fmt.Errorf("No die string found")
-	}
-
+func dieFromString(s string) (int, Die) {
 	n, f := 0, 0
-	fmt.Sscanf(m, "%dd%d", &n, &f)
-	return n, Die{faces: makeFaces(f)}, nil
+	fmt.Sscanf(s, "%dd%d", &n, &f)
+	return n, Die{faces: makeFaces(f)}
 }
 
-func keepFromString(s string) (int, Range, error) {
-	k := keep.FindString(s)
-	if k == "" {
-		return 0, -1, fmt.Errorf("No keep string found")
-	}
+func keepFromString(s string) (int, Range) {
+	r, n := LOW, 0
 
-	var (
-		r Range
-		n int
-	)
-
-	if strings.Contains(k, "l") {
-		r = LOW
-		fmt.Sscanf(k, "Kl%d", &n)
+	if strings.Contains(s, "l") {
+		fmt.Sscanf(s, "Kl%d", &n)
 	} else {
 		r = HIGH
-		fmt.Sscanf(k, "Kh%d", &n)
+		fmt.Sscanf(s, "Kh%d", &n)
 	}
 
-	return n, r, nil
+	return n, r
+}
+
+func expFromString(s string) []int {
+	m := []int{}
+
+	for _, char := range s {
+		n, err := strconv.Atoi(string(char))
+		if err != nil {
+			continue
+		}
+
+		m = append(m, n)
+	}
+
+	return m
 }

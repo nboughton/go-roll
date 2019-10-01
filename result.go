@@ -55,22 +55,25 @@ func (r Result) Keep(n int, hl Range) Result {
 // Explode recursively rerolls d Die for any results included in match and returns a completed
 // Result set with all exploded items
 func (r Result) Explode(match ...int) Result {
-	var x func(s, o []Face) ([]Face, []Face)
-	x = func(s, o []Face) ([]Face, []Face) {
-		for i, res := range o {
+	var x func(store, results []Face) ([]Face, []Face)
+
+	x = func(store, results []Face) ([]Face, []Face) {
+		for i, result := range results {
 			for _, m := range match {
-				if res.N == m {
-					o = append(o, r.die.Roll())
-
-					s = append(s, res)
-					o = append(o[:i], o[i+1:]...)
-
-					s, o = x(s, o)
+				if result.N == m {
+					// Roll the exploded die
+					results = append(results, r.die.Roll())
+					// Store the current match
+					store = append(store, result)
+					// Remove it from results so it doesn't get exploded again
+					results = append(results[:i], results[i+1:]...)
+					// Explode the resultant set
+					store, results = x(store, results)
 				}
 			}
 		}
 
-		return s, o
+		return store, results
 	}
 
 	var store []Face

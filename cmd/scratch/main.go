@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-	fmt.Println(roll.FromString("3d6Kh2X4,5,6"))
+	fmt.Println(roll.FromString("3d6Kh2X6"))
 }
