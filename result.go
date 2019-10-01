@@ -8,7 +8,12 @@ import (
 // Result represents a set of dice rolls of a single die type
 type Result struct {
 	die   Die
-	rolls []Face
+	rolls Faces
+}
+
+// Die returns the Die of the result set.
+func (r Result) Die() Die {
+	return r.die
 }
 
 // Satisfy the Sort interface
@@ -93,6 +98,16 @@ func (r Result) Ints() []int {
 	return out
 }
 
+// Min returns the minimum possible result of a Result
+func (r Result) Min() int {
+	return len(r.Ints()) * r.Die().Min().N
+}
+
+// Max returns the maximum possible result of a Result
+func (r Result) Max() int {
+	return len(r.Ints()) * r.Die().Max().N
+}
+
 // Sum returns the total numerical value of a result set
 func (r Result) Sum() int {
 	var s int
@@ -113,18 +128,4 @@ func (r Result) Values() []string {
 	}
 
 	return out
-}
-
-// Results is used for a collection of Result structs representing difference Die types
-type Results []Result
-
-// Dice returns the number and die types of all results in the current set
-func (r Results) Dice() Set {
-	var s Set
-
-	for _, rs := range r {
-		s = append(s, Dice{N: len(rs.rolls), Die: rs.die})
-	}
-
-	return s
 }

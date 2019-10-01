@@ -4,8 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"strings"
 
-	//"github.com/nboughton/go-roll"
+	"github.com/nboughton/go-roll"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
@@ -14,9 +15,29 @@ import (
 var defaultrolls = 1000000
 
 func main() {
-	d := flag.String("d", "2d6", "Dice string to test")
+	d := flag.String("d", "3d6Kh2", "Dice string to test")
 	r := flag.Int("r", defaultrolls, "Set number of rolls to try")
 	flag.Parse()
+
+	if strings.Contains(*d, "X") {
+		log.Fatal("Exploding dice not supported for this program")
+	}
+
+	// Roll some dice
+	var results roll.Results
+	for i := 0; i < *r; i++ {
+		result, err := roll.FromString(*d)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		results = append(results, result)
+	}
+
+	var (
+		min = results[0].Min()
+		max = results[0].Max()
+	)
 
 	// New plot
 	pl, err := plot.New()
@@ -25,19 +46,19 @@ func main() {
 	}
 	pl.Title.Text = "Distribution For " + *d
 	pl.X.Label.Text = "Rolled"
-	pl.X.Min = float64(bag.Min())
-	pl.X.Max = float64(bag.Max())
+	pl.X.Min = float64(min)
+	pl.X.Max = float64(max)
 
 	pl.Y.Label.Text = "Probability (%)"
 	pl.Y.Min = 0
-	pl.Y.Max = 50
+	//pl.Y.Max = 50
 
 	pl.X.Tick.Marker = customTicks{}
 	pl.Y.Tick.Marker = customTicks{}
 	pl.Add(plotter.NewGrid())
 
 	// Generate plot data
-	l, err := plotter.NewLine(lineData(bag, *r))
+	l, err := plotter.NewLine(lineData(results, min, max))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,8 +73,23 @@ func main() {
 	}
 }
 
-func lineData(dice string, rolls int) {
+func lineData(results roll.Results, min, max int) plotter.XYs {
+	var (
+		xLen = max - min + 1
+		xy   = make(plotter.XYs, xLen)
+	)
 
+	for _, res := range results {
+		n := res.Sum() - min
+		xy[n].Y++
+	}
+
+	for i := range xy {
+		xy[i].X = float64(i + min)
+		xy[i].Y = xy[i].Y / float64(len(results)) * 100
+	}
+
+	return xy
 }
 
 type customTicks struct{}
