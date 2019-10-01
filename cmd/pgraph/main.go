@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/nboughton/go-roll"
 	"gonum.org/v1/plot"
@@ -19,10 +18,6 @@ func main() {
 	r := flag.Int("r", defaultrolls, "Set number of rolls to try")
 	flag.Parse()
 
-	if strings.Contains(*d, "X") {
-		log.Fatal("Exploding dice not supported for this program")
-	}
-
 	// Roll some dice
 	var results roll.Results
 	for i := 0; i < *r; i++ {
@@ -35,8 +30,8 @@ func main() {
 	}
 
 	var (
-		min = results[0].Min()
-		max = results[0].Max()
+		min = results.Min()
+		max = results.Max()
 	)
 
 	// New plot

@@ -13,3 +13,31 @@ func (r Results) Dice() Set {
 
 	return s
 }
+
+// Min returns the minimum possible roll of any result in the set
+func (r Results) Min() int {
+	min := r.Max()
+
+	for _, result := range r {
+		m := result.Min()
+		if m < min {
+			min = m
+		}
+	}
+
+	return min
+}
+
+// Max returns the maximum possible roll of any result in the set
+func (r Results) Max() int {
+	max := 0
+
+	for _, result := range r {
+		m := result.Max()
+		if m > max {
+			max = m
+		}
+	}
+
+	return max
+}
