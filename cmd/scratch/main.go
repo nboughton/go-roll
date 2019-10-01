@@ -7,7 +7,5 @@ import (
 )
 
 func main() {
-	for i := 0; i < 100; i++ {
-		fmt.Printf("%+v\n", roll.Dice(6, roll.D10).Explode(9, 10))
-	}
+	fmt.Println(roll.FromString("3d6Kh2X4,5,6"))
 }

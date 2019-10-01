@@ -5,16 +5,18 @@ import (
 	"strings"
 )
 
-// Result represents a set of dice rolls that satsifies the sort interface
+// Result represents a set of dice rolls of a single die type
 type Result struct {
 	die   Die
 	rolls []Face
 }
 
+// Satisfy the Sort interface
 func (r Result) Len() int           { return len(r.rolls) }
 func (r Result) Less(i, j int) bool { return r.rolls[i].N < r.rolls[j].N }
 func (r Result) Swap(i, j int)      { r.rolls[i], r.rolls[j] = r.rolls[j], r.rolls[i] }
 
+// Satisfy the String interface
 func (r Result) String() string {
 	var out []string
 
@@ -50,28 +52,6 @@ func (r Result) Keep(n int, hl Range) Result {
 	return out
 }
 
-// Ints returns just the number values (useful for running totals)
-func (r Result) Ints() []int {
-	var out []int
-
-	for _, n := range r.rolls {
-		out = append(out, n.N)
-	}
-
-	return out
-}
-
-// Sum returns the total numerical value of a result set
-func (r Result) Sum() int {
-	var s int
-
-	for _, n := range r.rolls {
-		s += n.N
-	}
-
-	return s
-}
-
 // Explode recursively rerolls d Die for any results included in match and returns a completed
 // Result set with all exploded items
 func (r Result) Explode(match ...int) Result {
@@ -97,4 +77,26 @@ func (r Result) Explode(match ...int) Result {
 	store, out := x(store, r.rolls)
 
 	return Result{die: r.die, rolls: append(out, store...)}
+}
+
+// Ints returns just the number values (useful for running totals)
+func (r Result) Ints() []int {
+	var out []int
+
+	for _, n := range r.rolls {
+		out = append(out, n.N)
+	}
+
+	return out
+}
+
+// Sum returns the total numerical value of a result set
+func (r Result) Sum() int {
+	var s int
+
+	for _, n := range r.rolls {
+		s += n.N
+	}
+
+	return s
 }
