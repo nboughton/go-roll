@@ -28,17 +28,17 @@ func (r Result) String() string {
 	return strings.Join(out, ", ")
 }
 
-// Range provides readable identifiers for selecting HIGH/LOW values as keep or drop
-type Range int
+// MatchType provides readable identifiers for selecting HIGH/LOW values as keep or drop
+type MatchType int
 
-// Ranges for Result.Keep/Drop
+// MatchTypes for Result.Keep/Drop
 const (
-	HIGH Range = iota
+	HIGH MatchType = iota
 	LOW
 )
 
 // Keep returns a new result struct containing the highest or lowest n results
-func (r Result) Keep(n int, hl Range) Result {
+func (r Result) Keep(n int, hl MatchType) Result {
 	out := Result{die: r.die}
 
 	sort.Sort(r)
@@ -99,6 +99,31 @@ func (r Result) Sum() int {
 
 	for _, n := range r.rolls {
 		s += n.N
+	}
+
+	return s
+}
+
+// Values returns the strings values of Results faces
+func (r Result) Values() []string {
+	var out []string
+
+	for _, val := range r.rolls {
+		out = append(out, val.Value)
+	}
+
+	return out
+}
+
+// Results is used for a collection of Result structs representing difference Die types
+type Results []Result
+
+// Dice returns the number and die types of all results in the current set
+func (r Results) Dice() Set {
+	var s Set
+
+	for _, rs := range r {
+		s = append(s, Dice{N: len(rs.rolls), Die: rs.die})
 	}
 
 	return s

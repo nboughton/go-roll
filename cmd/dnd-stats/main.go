@@ -12,6 +12,6 @@ import (
 func main() {
 	// Roll 6 times
 	for i := 0; i < 6; i++ {
-		fmt.Println(roll.Dice(4, roll.D6).Keep(3, roll.HIGH).Sum())
+		fmt.Println(roll.Roll(4, roll.D6).Keep(3, roll.HIGH).Sum())
 	}
 }

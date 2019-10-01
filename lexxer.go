@@ -8,31 +8,32 @@ import (
 )
 
 var (
-	dice    = regexp.MustCompile(`\d+d\d+`)
-	keep    = regexp.MustCompile(`K(l|h)\d+`)
-	exp     = regexp.MustCompile(`X[\d,]+`)
-	matcher = regexp.MustCompile(fmt.Sprintf("(%s|%s|%s)", dice, keep, exp))
+	lexDice    = regexp.MustCompile(`\d+d\d+`)
+	lexKeep    = regexp.MustCompile(`K(l|h)\d+`)
+	lexExp     = regexp.MustCompile(`X[\d,]+`)
+	lexNum     = regexp.MustCompile(`\d+`)
+	lexMatcher = regexp.MustCompile(fmt.Sprintf("(%s|%s|%s)", lexDice, lexKeep, lexExp))
 )
 
-// FromString reads a dice string like 3d6X6Kh2: roll 3 6 sided dice, exploding 6s, and keep the lowest 2, and return a Result struct
+// FromString reads a dice string like 3d6X6Kh2: roll 3 6 sided dice, exploding 6s, and keep the lowest 2, and returns a Result struct
 func FromString(s string) (Result, error) {
 	var roll Result
 
 	// Get indices
-	for i, op := range matcher.FindAllString(s, -1) {
-		if i == 0 && !dice.MatchString(op) {
+	for i, op := range lexMatcher.FindAllString(s, -1) {
+		if i == 0 && !lexDice.MatchString(op) {
 			return roll, fmt.Errorf("First argument must be a dice string (3d6 etc)")
 		}
 
 		switch {
-		case dice.MatchString(op):
-			roll = Dice(dieFromString(op))
+		case lexDice.MatchString(op):
+			roll = Roll(parseDie(op))
 
-		case keep.MatchString(op):
-			roll = roll.Keep(keepFromString(op))
+		case lexKeep.MatchString(op):
+			roll = roll.Keep(parseKeep(op))
 
-		case exp.MatchString(op):
-			roll = roll.Explode(expFromString(op)...)
+		case lexExp.MatchString(op):
+			roll = roll.Explode(parseExp(op)...)
 
 		default:
 			return roll, fmt.Errorf("Invalid operation: %s", op)
@@ -43,13 +44,13 @@ func FromString(s string) (Result, error) {
 	return roll, nil
 }
 
-func dieFromString(s string) (int, Die) {
+func parseDie(s string) (int, Die) {
 	n, f := 0, 0
 	fmt.Sscanf(s, "%dd%d", &n, &f)
 	return n, Die{faces: makeFaces(f)}
 }
 
-func keepFromString(s string) (int, Range) {
+func parseKeep(s string) (int, MatchType) {
 	r, n := LOW, 0
 
 	if strings.Contains(s, "l") {
@@ -62,11 +63,11 @@ func keepFromString(s string) (int, Range) {
 	return n, r
 }
 
-func expFromString(s string) []int {
+func parseExp(s string) []int {
 	m := []int{}
 
-	for _, char := range s {
-		n, err := strconv.Atoi(string(char))
+	for _, tok := range lexNum.FindAllString(s, -1) {
+		n, err := strconv.Atoi(tok)
 		if err != nil {
 			continue
 		}
