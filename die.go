@@ -25,7 +25,7 @@ func (f Faces) Less(i, j int) bool { return f[i].N < f[j].N }
 func (f Faces) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
 
 // NewDie returns a uniq Die useful for custom dice systems like FFG/Genesys
-func NewDie(faces []Face) Die {
+func NewDie(faces Faces) Die {
 	return Die{faces: faces}
 }
 

@@ -98,6 +98,17 @@ func (r Result) Ints() []int {
 	return out
 }
 
+// Values returns the strings values of Results faces
+func (r Result) Values() []string {
+	var out []string
+
+	for _, val := range r.rolls {
+		out = append(out, val.Value)
+	}
+
+	return out
+}
+
 // Min returns the minimum possible result of a Result
 func (r Result) Min() int {
 	return len(r.Ints()) * r.Die().Min().N
@@ -119,13 +130,7 @@ func (r Result) Sum() int {
 	return s
 }
 
-// Values returns the strings values of Results faces
-func (r Result) Values() []string {
-	var out []string
-
-	for _, val := range r.rolls {
-		out = append(out, val.Value)
-	}
-
-	return out
+// Reroll rerolls the current Result set
+func (r Result) Reroll() Result {
+	return Roll(len(r.Ints()), r.die)
 }
