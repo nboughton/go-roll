@@ -90,7 +90,7 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().StringArrayP("dice", "d", []string{"1d10", "2d10Kl1"}, "Dice strings to test")
-	rootCmd.Flags().StringArrayP("label", "l", []string{}, "Labels for plots, these are applied to their respective dice strings")
+	rootCmd.Flags().StringArrayP("label", "l", []string{}, "Labels for results, these are applied to their respective dice strings")
 	rootCmd.Flags().IntP("rolls", "r", 100000, "Number of times to roll each dice set")
 	rootCmd.Flags().IntSliceP("want", "w", []int{9, 10}, "Numbers to test for")
 }
