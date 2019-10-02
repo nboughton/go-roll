@@ -41,3 +41,14 @@ func (r Results) Max() int {
 
 	return max
 }
+
+// Reroll rerolls the current Results set
+func (r Results) Reroll() Results {
+	var results Results
+
+	for _, result := range r {
+		results = append(results, result.Reroll())
+	}
+
+	return results
+}
