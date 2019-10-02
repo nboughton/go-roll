@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/nboughton/go-roll"
 	"github.com/spf13/cobra"
@@ -91,7 +90,7 @@ var RootCmd = &cobra.Command{
 		var argsLine []interface{}
 		for i, results := range resultsData {
 			label := dice[i]
-			if len(labels) >= i {
+			if len(labels) > i {
 				label = labels[i]
 			}
 			argsLine = append(argsLine, label, lineData(results, min, max))
@@ -102,7 +101,7 @@ var RootCmd = &cobra.Command{
 		pl.Legend.Left = true
 
 		// Save to png
-		if err := pl.Save(20*vg.Centimeter, 15*vg.Centimeter, fmt.Sprintf("%s.png", strings.Join(labels, ";"))); err != nil {
+		if err := pl.Save(20*vg.Centimeter, 15*vg.Centimeter, fmt.Sprintf("%s.png", title)); err != nil {
 			log.Fatal(err)
 		}
 
@@ -197,8 +196,8 @@ func Execute() {
 }
 
 func init() {
-	RootCmd.Flags().StringArrayP("dice", "d", []string{"4d6Kl2", "3d6Kl2", "2d6", "3d6Kh2", "4d6Kh2"}, "Dice strings to plot")
-	RootCmd.Flags().StringArrayP("label", "l", []string{"2 Penalty Dice", "1 Penalty Die", "Normal Roll", "1 Bonus Die", "2 Bonus Dice"}, "Labels for plots, ideally there should be an equal number of --labels to --dice")
+	RootCmd.Flags().StringArrayP("dice", "d", []string{"2d6", "3d6", "4d6", "3d6Kh2", "4d6Kh2"}, "Dice strings to plot")
+	RootCmd.Flags().StringArrayP("label", "l", []string{}, "Labels for plots, these are applied to their respective dice strings")
 	RootCmd.Flags().IntP("rolls", "r", 100000, "Number of times to roll each dice set")
-	RootCmd.Flags().StringP("title", "t", "Everywhen; weighted rolls", "Title of graph")
+	RootCmd.Flags().StringP("title", "t", "graph", "Title of graph")
 }
