@@ -24,7 +24,7 @@ import (
 )
 
 func main() {
-  fmt.Println(roll.Roll("4d10").Keep(3, roll.HIGH).Explode(10).Keep(1, roll.Low))
+  fmt.Println(roll.Roll(4, roll.D10).Keep(3, roll.HIGH).Explode(10).Keep(1, roll.Low))
 }
 ```
 
