@@ -13,6 +13,21 @@ Dice string syntax support is:
   
 These can be chained with a string like 4d10Kh3X10Kl1 to produce an end result.
 
+Quickstart:
+```Go
+package main
+
+import (
+  "fmt"
+  
+  "github.com/nboughton/go-roll"
+)
+
+func main() {
+  fmt.Println(roll.Roll("4d10").Keep(3, roll.HIGH).Explode(10).Keep(1, roll.Low))
+}
+```
+
 There are a few example applications in the cmd/ folder.
 
   - dnd-stats
