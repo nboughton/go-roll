@@ -11,7 +11,7 @@ Dice string syntax support is:
   - K(h|l)x: Kh1, Kl2 etc. Keep highest or lowest n dice.
   - Xn,n...: X9,10 etc. Explode any dice in the set
   
-These can be chained with a string like 4d10Kh3X10Kl1 to produce and end result.
+These can be chained with a string like 4d10Kh3X10Kl1 to produce an end result.
 
 There are a few example applications in the cmd/ folder.
 
