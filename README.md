@@ -15,3 +15,5 @@ There are a few example applications in the cmd/ folder.
     - Rolls a standard set of 4 Fate dice
   - pgraph
     - Renders a plot of dice sets as a png
+  - roll
+    - Rolls a dice string and prints the result
