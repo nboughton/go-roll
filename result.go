@@ -46,6 +46,12 @@ const (
 func (r Result) Keep(n int, hl MatchType) Result {
 	out := Result{die: r.die}
 
+	// Erik, you sod.
+	if n > len(r.rolls) {
+		out.rolls = r.rolls
+		return out
+	}
+
 	sort.Sort(r)
 	switch hl {
 	case HIGH:
@@ -60,6 +66,12 @@ func (r Result) Keep(n int, hl MatchType) Result {
 // Drop is provided for semantic completeness as it may be easier to think in terms of dropping HIGH/LOW rather than keeping
 func (r Result) Drop(n int, hl MatchType) Result {
 	out := Result{die: r.die}
+
+	// And here.
+	if n > len(r.rolls) {
+		out.rolls = Faces{}
+		return out
+	}
 
 	sort.Sort(r)
 	switch hl {
