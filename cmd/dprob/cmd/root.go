@@ -72,7 +72,7 @@ var rootCmd = &cobra.Command{
 			if len(labels) > i {
 				l = labels[i]
 			}
-			fmt.Fprintf(tw, "%s\t==\t%v\t%.3f%%\n", l, want, float64(p)/float64(rolls)*100)
+			fmt.Fprintf(tw, "%s\t==\t%v\t%.2f%%\n", l, want, float64(p)/float64(rolls)*100)
 		}
 
 		tw.Flush()

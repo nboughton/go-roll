@@ -64,10 +64,7 @@ var RootCmd = &cobra.Command{
 			resultsData = append(resultsData, results)
 		}
 
-		var (
-			min = min(resultsData)
-			max = max(resultsData)
-		)
+		min, max := min(resultsData), max(resultsData)
 
 		// New plot
 		pl, err := plot.New()
