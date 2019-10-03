@@ -47,7 +47,7 @@ func (r Result) Keep(n int, hl MatchType) Result {
 	out := Result{die: r.die}
 
 	// Erik, you sod.
-	if n < 0 || n > len(r.rolls) {
+	if n < 1 || n > len(r.rolls) {
 		out.rolls = r.rolls
 		return out
 	}
@@ -68,7 +68,7 @@ func (r Result) Drop(n int, hl MatchType) Result {
 	out := Result{die: r.die}
 
 	// And here.
-	if n < 0 || n > len(r.rolls) {
+	if n < 1 || n > len(r.rolls) {
 		out.rolls = Faces{}
 		return out
 	}
