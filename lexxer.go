@@ -23,11 +23,14 @@ func FromString(s string) (Result, error) {
 	// Get indices
 	for i, op := range lexMatcher.FindAllString(s, -1) {
 		if i == 0 && !lexDice.MatchString(op) {
-			return roll, fmt.Errorf("First argument must be a dice string (3d6 etc)")
+			return roll, fmt.Errorf("first argument must be a dice string (3d6 etc)")
 		}
 
 		switch {
 		case lexDice.MatchString(op):
+			if string(op[0]) == "0" {
+				return roll, fmt.Errorf("cannot roll 0 dice")
+			}
 			roll = Roll(parseDie(op))
 
 		case lexKeep.MatchString(op):
@@ -40,7 +43,7 @@ func FromString(s string) (Result, error) {
 			roll = roll.Explode(parseExp(op)...)
 
 		default:
-			return roll, fmt.Errorf("Invalid operation: %s", op)
+			return roll, fmt.Errorf("invalid operation: %s", op)
 		}
 
 	}
