@@ -3,15 +3,16 @@ go-roll is a dice rolling library written in Go. It will eventually include Roll
 code relevant to table top RPGs.
 
 Roll is a successor to go-dice. It's designed to facilitate chaining roll results and currently includes a simple lexxer for rolling dice
-strings. It supports keeping high/low results as preferred and exploding dice.
+strings. It supports keeping and dropping high/low results as preferred, and exploding dice.
 
 Dice string syntax support is:
 
   - ndx: 3d6, 4d10 etc. A Dice string must begin with this.
   - K(h|l)x: Kh1, Kl2 etc. Keep highest or lowest n dice.
+  - D(h|l)x: Dl1, Dh2 etc. Drop the highest or lowest n dice.
   - Xn,n...: X9,10 etc. Explode any dice in the set
   
-These can be chained with a string like 4d10Kh3X10Kl1 to produce an end result.
+These can be chained with a string like 4d10Kh3X10Dl1 to produce an end result.
 
 Quickstart:
 ```Go
@@ -24,7 +25,7 @@ import (
 )
 
 func main() {
-  fmt.Println(roll.Roll(4, roll.D10).Keep(3, roll.HIGH).Explode(10).Keep(1, roll.Low))
+  fmt.Println(roll.Roll(4, roll.D10).Keep(3, roll.HIGH).Explode(10).Drop(1, roll.Low))
 }
 ```
 

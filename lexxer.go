@@ -10,9 +10,10 @@ import (
 var (
 	lexDice    = regexp.MustCompile(`\d+d\d+`)
 	lexKeep    = regexp.MustCompile(`K(l|h)\d+`)
+	lexDrop    = regexp.MustCompile(`D(l|h)\d+`)
 	lexExp     = regexp.MustCompile(`X[\d,]+`)
 	lexNum     = regexp.MustCompile(`\d+`)
-	lexMatcher = regexp.MustCompile(fmt.Sprintf("(%s|%s|%s)", lexDice, lexKeep, lexExp))
+	lexMatcher = regexp.MustCompile(fmt.Sprintf("(%s|%s|%s|%s)", lexDice, lexKeep, lexDrop, lexExp))
 )
 
 // FromString reads a dice string like 3d6X6Kh2: roll 3 6 sided dice, exploding 6s, and keep the lowest 2, and returns a Result struct
@@ -31,6 +32,9 @@ func FromString(s string) (Result, error) {
 
 		case lexKeep.MatchString(op):
 			roll = roll.Keep(parseKeep(op))
+
+		case lexDrop.MatchString(op):
+			roll = roll.Drop(parseDrop(op))
 
 		case lexExp.MatchString(op):
 			roll = roll.Explode(parseExp(op)...)
@@ -51,16 +55,29 @@ func parseDie(s string) (int, Die) {
 }
 
 func parseKeep(s string) (int, MatchType) {
-	r, n := LOW, 0
+	m, n := LOW, 0
 
 	if strings.Contains(s, "l") {
 		fmt.Sscanf(s, "Kl%d", &n)
 	} else {
-		r = HIGH
+		m = HIGH
 		fmt.Sscanf(s, "Kh%d", &n)
 	}
 
-	return n, r
+	return n, m
+}
+
+func parseDrop(s string) (int, MatchType) {
+	m, n := LOW, 0
+
+	if strings.Contains(s, "l") {
+		fmt.Sscanf(s, "Dl%d", &n)
+	} else {
+		m = HIGH
+		fmt.Sscanf(s, "Dh%d", &n)
+	}
+
+	return n, m
 }
 
 func parseExp(s string) []int {

@@ -57,6 +57,21 @@ func (r Result) Keep(n int, hl MatchType) Result {
 	return out
 }
 
+// Drop is provided for semantic completeness as it may be easier to think in terms of dropping HIGH/LOW rather than keeping
+func (r Result) Drop(n int, hl MatchType) Result {
+	out := Result{die: r.die}
+
+	sort.Sort(r)
+	switch hl {
+	case HIGH:
+		out.rolls = r.rolls[:len(r.rolls)-n]
+	case LOW:
+		out.rolls = r.rolls[n:]
+	}
+
+	return out
+}
+
 // Explode recursively rerolls d Die for any results included in match and returns a completed
 // Result set with all exploded items
 func (r Result) Explode(match ...int) Result {
