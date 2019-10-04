@@ -69,7 +69,7 @@ func (r Result) Drop(n int, hl MatchType) Result {
 
 	// And here.
 	if n < 1 || n > len(r.rolls) {
-		out.rolls = Faces{}
+		out.rolls = r.rolls
 		return out
 	}
 
