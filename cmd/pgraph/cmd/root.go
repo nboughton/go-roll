@@ -33,8 +33,6 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
-var cfgFile string
-
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "pgraph",

@@ -29,10 +29,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	cfgFile string
-	tw      = tabwriter.NewWriter(os.Stdout, 1, 2, 1, ' ', 0)
-)
+var tw = tabwriter.NewWriter(os.Stdout, 1, 2, 1, ' ', 0)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
