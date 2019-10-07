@@ -46,11 +46,27 @@ var RootCmd = &cobra.Command{
 			title, _  = cmd.Flags().GetString("title")
 		)
 
-		var resultsData []roll.Results
+		// New plot
+		pl, err := plot.New()
+		if err != nil {
+			log.Fatal(err)
+		}
+		pl.Title.Text = title
+		pl.X.Label.Text = "Rolled"
+		pl.Y.Label.Text = "Probability (%)"
 
-		for _, s := range dice {
-			// Roll some dice
+		pl.X.Tick.Marker = customTicks{}
+		pl.Y.Tick.Marker = customTicks{}
+
+		// Roll some dice and aggregate data
+		var argsLine []interface{}
+		for i, s := range dice {
 			var results roll.Results
+			label := dice[i]
+			if len(labels) > i {
+				label = labels[i]
+			}
+
 			for i := 0; i < rolls; i++ {
 				result, err := roll.FromString(s)
 				if err != nil {
@@ -59,37 +75,11 @@ var RootCmd = &cobra.Command{
 
 				results = append(results, result)
 			}
-			resultsData = append(resultsData, results)
+
+			argsLine = append(argsLine, label, lineData(results, results.Min(), results.Max()))
 		}
-
-		min, max := min(resultsData), max(resultsData)
-
-		// New plot
-		pl, err := plot.New()
-		if err != nil {
-			log.Fatal(err)
-		}
-		pl.Title.Text = title
-		pl.X.Label.Text = "Rolled"
-		pl.X.Min = float64(min)
-		pl.X.Max = float64(max)
-
-		pl.Y.Label.Text = "Probability (%)"
-		//pl.Y.Min = 0
-
-		pl.X.Tick.Marker = customTicks{}
-		pl.Y.Tick.Marker = customTicks{}
 
 		pl.Add(plotter.NewGrid())
-
-		var argsLine []interface{}
-		for i, results := range resultsData {
-			label := dice[i]
-			if len(labels) > i {
-				label = labels[i]
-			}
-			argsLine = append(argsLine, label, lineData(results, min, max))
-		}
 
 		plotutil.AddLines(pl, argsLine...)
 		pl.Legend.Top = true
@@ -153,32 +143,6 @@ func label(i float64, mod int) string {
 	}
 
 	return ""
-}
-
-func min(r []roll.Results) int {
-	min := max(r)
-
-	for _, rs := range r {
-		m := rs.Min()
-		if m < min {
-			min = m
-		}
-	}
-
-	return min
-}
-
-func max(r []roll.Results) int {
-	max := 0
-
-	for _, rs := range r {
-		m := rs.Max()
-		if m > max {
-			max = m
-		}
-	}
-
-	return max
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
