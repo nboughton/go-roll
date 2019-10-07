@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
+	"time"
 
 	"github.com/nboughton/go-roll"
 	"github.com/spf13/cobra"
@@ -32,6 +34,8 @@ import (
 	"gonum.org/v1/plot/plotutil"
 	"gonum.org/v1/plot/vg"
 )
+
+var wg sync.WaitGroup
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -46,6 +50,8 @@ var RootCmd = &cobra.Command{
 			title, _  = cmd.Flags().GetString("title")
 		)
 
+		t := time.Now()
+
 		// New plot
 		pl, err := plot.New()
 		if err != nil {
@@ -59,25 +65,44 @@ var RootCmd = &cobra.Command{
 		pl.Y.Tick.Marker = customTicks{}
 
 		// Roll some dice and aggregate data
-		var argsLine []interface{}
-		for i, s := range dice {
-			var results roll.Results
-			label := dice[i]
-			if len(labels) > i {
-				label = labels[i]
-			}
+		var (
+			argsLine []interface{}
+			wait     = make(chan int, 2) // run two rolls concurrently at a time to speed thins up a little
+		)
 
-			for i := 0; i < rolls; i++ {
-				result, err := roll.FromString(s)
-				if err != nil {
-					log.Fatal(err)
+		for i, s := range dice {
+			wg.Add(1)
+
+			go func(i int, s string) {
+				defer wg.Done()
+				wait <- 1
+
+				fmt.Println("rolling ", s)
+
+				var (
+					results roll.Results
+					label   = dice[i]
+				)
+
+				if len(labels) > i {
+					label = labels[i]
 				}
 
-				results = append(results, result)
-			}
+				for i := 0; i < rolls; i++ {
+					result, err := roll.FromString(s)
+					if err != nil {
+						log.Fatal(err)
+					}
 
-			argsLine = append(argsLine, label, lineData(results, results.Min(), results.Max()))
+					results = append(results, result)
+				}
+
+				argsLine = append(argsLine, label, lineData(results, results.Min(), results.Max()))
+				<-wait
+			}(i, s)
 		}
+
+		wg.Wait()
 
 		pl.Add(plotter.NewGrid())
 
@@ -89,7 +114,7 @@ var RootCmd = &cobra.Command{
 		if err := pl.Save(20*vg.Centimeter, 15*vg.Centimeter, fmt.Sprintf("%s.png", title)); err != nil {
 			log.Fatal(err)
 		}
-
+		fmt.Println("run time: ", time.Now().Sub(t).Round(time.Millisecond))
 	},
 }
 
