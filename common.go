@@ -24,11 +24,11 @@ var (
 	// D100 aka D%, typically two d10s reading one as tens and the other as units
 	D100 = NewDie(makeFaces(100))
 	// Fate aka the Fate die
-	Fate = NewDie([]Face{{-1, "[-]"}, {-1, "[-]"}, {0, "[ ]"}, {0, "[ ]"}, {1, "[+]"}, {1, "[+]"}})
+	Fate = NewDie(Faces{{-1, "[-]"}, {-1, "[-]"}, {0, "[ ]"}, {0, "[ ]"}, {1, "[+]"}, {1, "[+]"}})
 )
 
-func makeFaces(n int) []Face {
-	var f []Face
+func makeFaces(n int) Faces {
+	var f Faces
 
 	for i := 1; i <= n; i++ {
 		f = append(f, Face{i, strconv.Itoa(i)})

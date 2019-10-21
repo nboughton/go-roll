@@ -10,10 +10,12 @@ import (
 var (
 	lexDice    = regexp.MustCompile(`\d+d\d+`)
 	lexKeep    = regexp.MustCompile(`K(l|h)\d+`)
+	lexKeepN   = regexp.MustCompile(`Kn[\d,]+`)
 	lexDrop    = regexp.MustCompile(`D(l|h)\d+`)
+	lexDropN   = regexp.MustCompile(`Dn[\d,]+`)
 	lexExp     = regexp.MustCompile(`X[\d,]+`)
 	lexNum     = regexp.MustCompile(`\d+`)
-	lexMatcher = regexp.MustCompile(fmt.Sprintf("(%s|%s|%s|%s)", lexDice, lexKeep, lexDrop, lexExp))
+	lexMatcher = regexp.MustCompile(fmt.Sprintf("(%s|%s|%s|%s|%s|%s)", lexDice, lexKeep, lexKeepN, lexDrop, lexDropN, lexExp))
 )
 
 // FromString reads a dice string like 3d6X6Kh2: roll 3 6 sided dice, exploding 6s, and keep the lowest 2, and returns a Result struct
@@ -36,11 +38,17 @@ func FromString(s string) (Result, error) {
 		case lexKeep.MatchString(op):
 			roll = roll.Keep(parseKeep(op))
 
+		case lexKeepN.MatchString(op):
+			roll = roll.KeepN(parseComSepN(op)...)
+
 		case lexDrop.MatchString(op):
 			roll = roll.Drop(parseDrop(op))
 
+		case lexDropN.MatchString(op):
+			roll = roll.DropN(parseComSepN(op)...)
+
 		case lexExp.MatchString(op):
-			roll = roll.Explode(parseExp(op)...)
+			roll = roll.Explode(parseComSepN(op)...)
 
 		default:
 			return roll, fmt.Errorf("invalid operation: %s", op)
@@ -83,7 +91,7 @@ func parseDrop(s string) (int, MatchType) {
 	return n, m
 }
 
-func parseExp(s string) []int {
+func parseComSepN(s string) []int {
 	m := []int{}
 
 	for _, tok := range lexNum.FindAllString(s, -1) {

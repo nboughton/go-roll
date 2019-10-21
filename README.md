@@ -9,7 +9,9 @@ Dice string syntax support is:
 
   - ndx: 3d6, 4d10 etc. A Dice string must begin with this.
   - K(h|l)x: Kh1, Kl2 etc. Keep highest or lowest n dice.
+  - Kn1,2,3...: Only keep rolls matching 1,2,3...
   - D(h|l)x: Dl1, Dh2 etc. Drop the highest or lowest n dice.
+  - Dn1,2,3...: Drop all rolls matching 1,2,3...
   - Xn,n...: X9,10 etc. Explode any dice in the set
   
 These can be chained with a string like 4d10Kh3X10Dl1 to produce an end result.

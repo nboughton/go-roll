@@ -63,6 +63,22 @@ func (r Result) Keep(n int, hl MatchType) Result {
 	return out
 }
 
+// KeepN keeps all results included in match
+func (r Result) KeepN(match ...int) Result {
+	out := Result{die: r.die}
+
+	for _, d := range r.rolls {
+		for _, m := range match {
+			if d.N == m {
+				out.rolls = append(out.rolls, d)
+				break
+			}
+		}
+	}
+
+	return out
+}
+
 // Drop is provided for semantic completeness as it may be easier to think in terms of dropping HIGH/LOW rather than keeping
 func (r Result) Drop(n int, hl MatchType) Result {
 	out := Result{die: r.die}
@@ -84,12 +100,33 @@ func (r Result) Drop(n int, hl MatchType) Result {
 	return out
 }
 
+// DropN removes all results included in match
+func (r Result) DropN(match ...int) Result {
+	out := Result{die: r.die}
+
+	for _, d := range r.rolls {
+		isMatch := false
+		for _, m := range match {
+			if d.N == m {
+				isMatch = true
+				break
+			}
+		}
+
+		if !isMatch {
+			out.rolls = append(out.rolls, d)
+		}
+	}
+
+	return out
+}
+
 // Explode recursively rerolls d Die for any results included in match and returns a completed
 // Result set with all exploded items
 func (r Result) Explode(match ...int) Result {
-	var x func(store, results []Face) ([]Face, []Face)
+	var x func(store, results Faces) (Faces, Faces)
 
-	x = func(store, results []Face) ([]Face, []Face) {
+	x = func(store, results Faces) (Faces, Faces) {
 		for i, result := range results {
 			for _, m := range match {
 				if result.N == m {
@@ -108,7 +145,7 @@ func (r Result) Explode(match ...int) Result {
 		return store, results
 	}
 
-	var store []Face
+	var store Faces
 	store, out := x(store, r.rolls)
 
 	return Result{die: r.die, rolls: append(out, store...)}
