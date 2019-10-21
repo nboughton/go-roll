@@ -24,6 +24,16 @@ func (f Faces) Len() int           { return len(f) }
 func (f Faces) Less(i, j int) bool { return f[i].N < f[j].N }
 func (f Faces) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
 
+func (f Faces) contains(m int) bool {
+	for _, n := range f {
+		if n.N == m {
+			return true
+		}
+	}
+
+	return false
+}
+
 // NewDie returns a unique Die useful for custom dice systems like FFG/Genesys
 func NewDie(faces Faces) Die {
 	return Die{faces: faces}
