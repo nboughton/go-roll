@@ -19,8 +19,12 @@ var (
 )
 
 // FromString reads a dice string like 3d6X6Kh2: roll 3 6 sided dice, exploding 6s, and keep the lowest 2, and returns a Result struct
+// FromString will return an error containing any unparsed characters which can be used to check syntax and troubleshoot dice strings
 func FromString(s string) (Result, error) {
 	var roll Result
+
+	// Remove leading/trailing spaces
+	s = strings.TrimSpace(s)
 
 	// Get indices
 	for i, op := range lexMatcher.FindAllString(s, -1) {
@@ -54,6 +58,12 @@ func FromString(s string) (Result, error) {
 			return roll, fmt.Errorf("invalid operation: %s", op)
 		}
 
+		// Remmove parsed op from s
+		s = strings.Replace(s, op, "", 1)
+	}
+
+	if len(s) > 0 {
+		return roll, fmt.Errorf("unparsed characters: %s", s)
 	}
 
 	return roll, nil
