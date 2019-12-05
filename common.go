@@ -41,11 +41,13 @@ func makeFaces(n int) Faces {
 	return f
 }
 
+var oneToSix = []string{"1", "2", "3", "4", "5", "6"}
+
 func makeD66() Faces {
 	var f Faces
 
-	for _, tens := range []string{"1", "2", "3", "4", "5", "6"} {
-		for _, digits := range []string{"1", "2", "3", "4", "5", "6"} {
+	for _, tens := range oneToSix {
+		for _, digits := range oneToSix {
 			n, _ := strconv.Atoi(tens + digits)
 			f = append(f, Face{N: n, Value: tens + digits})
 		}
@@ -57,9 +59,9 @@ func makeD66() Faces {
 func makeD666() Faces {
 	var f Faces
 
-	for _, hundreds := range []string{"1", "2", "3", "4", "5", "6"} {
-		for _, tens := range []string{"1", "2", "3", "4", "5", "6"} {
-			for _, digits := range []string{"1", "2", "3", "4", "5", "6"} {
+	for _, hundreds := range oneToSix {
+		for _, tens := range oneToSix {
+			for _, digits := range oneToSix {
 				n, _ := strconv.Atoi(hundreds + tens + digits)
 				f = append(f, Face{N: n, Value: hundreds + tens + digits})
 			}
