@@ -25,6 +25,9 @@ var (
 	D100 = NewDie(makeFaces(100))
 	// Fate aka the Fate die
 	Fate = NewDie(Faces{{-1, "[-]"}, {-1, "[-]"}, {0, "[ ]"}, {0, "[ ]"}, {1, "[+]"}, {1, "[+]"}})
+	// D66 as used in Mutant: Year Zero
+	D66 = makeD66()
+	// D666 as used in Mutant: Year Zero
 )
 
 func makeFaces(n int) Faces {
@@ -32,6 +35,34 @@ func makeFaces(n int) Faces {
 
 	for i := 1; i <= n; i++ {
 		f = append(f, Face{i, strconv.Itoa(i)})
+	}
+
+	return f
+}
+
+func makeD66() Faces {
+	var f Faces
+
+	for _, tens := range []string{"1", "2", "3", "4", "5", "6"} {
+		for _, digits := range []string{"1", "2", "3", "4", "5", "6"} {
+			n, _ := strconv.Atoi(tens + digits)
+			f = append(f, Face{N: n, Value: tens + digits})
+		}
+	}
+
+	return f
+}
+
+func makeD666() Faces {
+	var f Faces
+
+	for _, hundreds := range []string{"1", "2", "3", "4", "5", "6"} {
+		for _, tens := range []string{"1", "2", "3", "4", "5", "6"} {
+			for _, digits := range []string{"1", "2", "3", "4", "5", "6"} {
+				n, _ := strconv.Atoi(hundreds + tens + digits)
+				f = append(f, Face{N: n, Value: hundreds + tens + digits})
+			}
+		}
 	}
 
 	return f

@@ -118,7 +118,7 @@ func (r TableRegistry) Get(id string) (Table, error) {
 type Table struct {
 	ID     string // Shorthand ID for finding subtables
 	Name   string
-	Dice   string
+	Dice   Dice
 	Reroll TableReroll
 	Items  []TableItem
 }
@@ -126,7 +126,7 @@ type Table struct {
 // TableReroll describes conditions under which the table should be rolled on again, using a different dice value
 type TableReroll struct {
 	Match matchSet
-	Dice  string
+	Dice  Dice
 }
 
 // TableItem represents the text and matching numbers from the table
@@ -162,11 +162,7 @@ func (m matchSet) String() string {
 func (t Table) Roll() string {
 	out := ""
 
-	r, err := FromString(t.Dice)
-	if err != nil {
-		return "Error: " + err.Error()
-	}
-
+	r := t.Dice.Roll()
 	n := r.Sum()
 	// Record initial roll result
 	for _, i := range t.Items {
@@ -177,11 +173,7 @@ func (t Table) Roll() string {
 
 	// Check for a reroll
 	if t.Reroll.Match.contains(n) {
-		r, err = FromString(t.Reroll.Dice)
-		if err != nil {
-			return "Error: " + err.Error()
-		}
-
+		r = t.Reroll.Dice.Roll()
 		n = r.Sum()
 		for _, i := range t.Items {
 			if i.Match.contains(n) {
