@@ -28,6 +28,7 @@ var (
 	// D66 as used in Mutant: Year Zero
 	D66 = makeD66()
 	// D666 as used in Mutant: Year Zero
+	D666 = makeD666()
 )
 
 func makeFaces(n int) Faces {
