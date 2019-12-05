@@ -26,9 +26,9 @@ var (
 	// Fate aka the Fate die
 	Fate = NewDie(Faces{{-1, "[-]"}, {-1, "[-]"}, {0, "[ ]"}, {0, "[ ]"}, {1, "[+]"}, {1, "[+]"}})
 	// D66 as used in Mutant: Year Zero
-	D66 = makeD66()
+	D66 = NewDie(makeD66())
 	// D666 as used in Mutant: Year Zero
-	D666 = makeD666()
+	D666 = NewDie(makeD666())
 )
 
 func makeFaces(n int) Faces {
