@@ -125,20 +125,20 @@ type Table struct {
 
 // TableReroll describes conditions under which the table should be rolled on again, using a different dice value
 type TableReroll struct {
-	Match matchSet
+	Match TableMatchSet
 	Dice  Dice
 }
 
 // TableItem represents the text and matching numbers from the table
 type TableItem struct {
-	Match  matchSet
+	Match  TableMatchSet
 	Text   string
 	Action func() string
 }
 
-type matchSet []int
+type TableMatchSet []int
 
-func (m matchSet) contains(n int) bool {
+func (m TableMatchSet) Contains(n int) bool {
 	for _, i := range m {
 		if i == n {
 			return true
@@ -148,7 +148,7 @@ func (m matchSet) contains(n int) bool {
 	return false
 }
 
-func (m matchSet) String() string {
+func (m TableMatchSet) String() string {
 	var s []string
 
 	for _, n := range m {
@@ -166,17 +166,17 @@ func (t Table) Roll() string {
 	n := r.Sum()
 	// Record initial roll result
 	for _, i := range t.Items {
-		if i.Match.contains(n) {
+		if i.Match.Contains(n) {
 			out = i.Text
 		}
 	}
 
 	// Check for a reroll
-	if t.Reroll.Match.contains(n) {
+	if t.Reroll.Match.Contains(n) {
 		r = t.Reroll.Dice.Roll()
 		n = r.Sum()
 		for _, i := range t.Items {
-			if i.Match.contains(n) {
+			if i.Match.Contains(n) {
 				if out != "" {
 					out += "; "
 				}
@@ -187,7 +187,7 @@ func (t Table) Roll() string {
 
 	// Append text for final roll result
 	for _, i := range t.Items {
-		if i.Match.contains(n) {
+		if i.Match.Contains(n) {
 			if i.Action != nil {
 				if out != "" {
 					out += "; "
@@ -244,4 +244,16 @@ func (l List) String() string {
 // Label returns the list Name
 func (l List) Label() string {
 	return l.Name
+}
+
+// MatchRange produces a TableMatchSet from start to end inclusive in order to make it easier
+// to match large sets of numbers without having to type them all in
+func MatchRange(start, end int) TableMatchSet {
+	var out TableMatchSet
+
+	for i := start; i <= end; i++ {
+		out = append(out, i)
+	}
+
+	return out
 }
