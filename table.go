@@ -136,8 +136,10 @@ type TableItem struct {
 	Action func() string
 }
 
+// TableMatchSet wraps ranges of numbers to match
 type TableMatchSet []int
 
+// Contains checks if a set Contains n
 func (m TableMatchSet) Contains(n int) bool {
 	for _, i := range m {
 		if i == n {
