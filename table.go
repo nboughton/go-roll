@@ -119,6 +119,7 @@ type Table struct {
 	ID     string // Shorthand ID for finding subtables
 	Name   string
 	Dice   Dice
+	Mod    int
 	Reroll TableReroll
 	Items  []TableItem
 }
@@ -163,7 +164,14 @@ func (t Table) Roll() string {
 	out := ""
 
 	r := t.Dice.Roll()
-	n := r.Sum()
+	n := r.Sum() + t.Mod
+	if n < t.Dice.Min() {
+		n = t.Dice.Min()
+	}
+	if n > t.Dice.Max() {
+		n = t.Dice.Max()
+	}
+
 	// Record initial roll result
 	for _, i := range t.Items {
 		if i.Match.Contains(n) {
