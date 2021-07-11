@@ -22,11 +22,11 @@ package main
 import (
   "fmt"
   
-  "github.com/nboughton/go-roll"
+  _ "github.com/nboughton/go-roll"
 )
 
 func main() {
-  fmt.Println(roll.Roll(4, roll.D10).Keep(3, roll.HIGH).Explode(10).Drop(1, roll.Low))
+  fmt.Println(Roll(4, D10).Keep(3, HIGH).Explode(10).Drop(1, Low))
 }
 ```
 
